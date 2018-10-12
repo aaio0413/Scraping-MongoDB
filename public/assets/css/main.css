@@ -1,0 +1,31 @@
+.navbar li {
+    list-style: none;
+}
+
+nav {
+    background-color: rgb(99, 210, 236);
+}
+
+.black-foot {
+    width: 100%;
+    bottom: 0;
+    /* display: flex; */
+    height: 120px;
+    position: absolute;
+}
+
+.footer-wrapper {
+    width: 100%;
+    padding: 45px;
+    display: flex;
+}
+
+.component-wrapper-left {
+    width: 50%;
+}
+
+.component-wrapper-right {
+    width: 50%;
+    display: flex;
+    justify-content: space-between;
+}
