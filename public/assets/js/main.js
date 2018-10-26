@@ -5,6 +5,31 @@
 //       $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
 //     }
 //   });
+
+const handleSubmit = itemId => {
+  console.log("submit!");
+  // const thisId = $(this).prevUntil("button", ".comment");
+  // .attr("data-id");
+  const thisId = itemId;
+  console.log("the submit button is clicked, the item id is: ", thisId);
+  const memoText = $("#memo-input").val();
+  console.log("the memo's context is: ", memoText);
+
+  $.ajax({
+    method: "POST",
+    url: "/anime_lists/" + thisId,
+    data: {
+      body: memoText
+    }
+  }).then(function(result) {
+    // Log the response
+    console.log(result);
+  });
+  $("#memo-input").val("");
+};
+// //////##################   THIS IS TO DO
+// ###########   put this function in side of for loop to be ebaled to execute plus, set the target or e.stopPrepagation()
+//  ###########  to make other child elements not to fir this function!!!! and you are good to goooooo!
 const pasteMemos = itemId => {
   $(".memo-context").empty();
 
@@ -96,11 +121,14 @@ $(document).ready(function() {
         const commentButton = document.createElement("Button");
         commentButton.setAttribute("class", "comment");
         commentButton.setAttribute("data-id", item._id);
+        commentButton.setAttribute("id", "getIt");
         commentButton.setAttribute(
           "onclick",
           `pasteMemos("${item._id}");openForm()`
         );
+
         commentButton.innerText = "Comment";
+
         // itemContent.append(commentButton);
 
         const commentBtnDiv = document.createElement("DIV");
@@ -119,12 +147,12 @@ $(document).ready(function() {
         const memoInput = document.createElement("textarea");
         memoInput.setAttribute("id", "memo-input");
 
-        const submitBtn = document.createElement("input");
-        submitBtn.setAttribute("type", "button");
+        const submitBtn = document.createElement("button");
+        // submitBtn.setAttribute("type", "button");
         submitBtn.setAttribute("class", "submitBtn btn");
-        // submitBtn.setAttribute("onclick", "handleSubmit()");
-        submitBtn.setAttribute("value", "SUBMIT");
-        // submitBtn.innerText = "SUBMIT";
+        submitBtn.setAttribute("onclick", `handleSubmit("${item._id}")`);
+        // submitBtn.setAttribute("value", "SUBMIT");
+        submitBtn.innerText = "SUBMIT";
 
         const closeBtn = document.createElement("BUTTON");
         // closeBtn.setAttribute("type", "submit");
@@ -138,7 +166,6 @@ $(document).ready(function() {
         commentForm.appendChild(submitBtn);
         commentForm.appendChild(closeBtn);
         commentBtnDiv.appendChild(commentForm);
-        commentButton.append(commentBtnDiv);
 
         // summaryContents =
         //   title.outerHTML + summary.outerHTML + commentButton.outerHTML;
@@ -146,33 +173,137 @@ $(document).ready(function() {
         summaryWrapper.appendChild(title);
         summaryWrapper.appendChild(summary);
         summaryWrapper.appendChild(commentButton);
+        summaryWrapper.appendChild(commentBtnDiv);
 
         itemContent.append(summaryWrapper);
 
         listItem.appendChild(itemContent);
         document.getElementById("items").appendChild(listItem);
+
+        // let openUpBtn = document.getElementsByClassName("comment");
+        // console.log(openUpBtn);
+        // // openUpBtn.addEventListener("click", function(e) {
+        // //   console.log("this is event listener: ", e.target);
+        // // });
+
+        // $("#getIt").on("click", function(event) {
+        //   // event.stopPropagation();
+        //   event.preventDefault();
+        //   console.log("the comment button is cliicked", this);
+        //   openForm();
+
+        //   const thisId = this.getAttribute("data-id");
+        //   console.log("from paste Memo", thisId);
+
+        //   // Now make an ajax call for the Article
+        //   $.ajax({
+        //     method: "GET",
+        //     url: "/anime_lists/" + thisId
+        //   })
+        //     // With that done, add the note information to the page
+        //     .then(function(data) {
+        //       console.log("comment button", data);
+        //       console.log("comment button", data.memo);
+
+        //       if (data.memo) {
+        //         $(".memo-context").empty();
+        //         const memoText = document.createElement("p");
+        //         memoText.innerText = data.memo.body;
+
+        //         $(".memo-context").append(memoText);
+        //       }
+        //     });
+        // });
+
+        // $("#getIt").on("click", function(e) {
+        //   const targetElement = e.currentTarget;
+        //   // $(targetElement).parentNode;
+        //   console.log(
+        //     "target element is: ",
+        //     $(targetElement).contents().prevObject
+        //   );
+        //   console.log("openUpBtn is", openUpBtn);
+        //   if ($(targetElement).is("button.comment")) {
+        //     console.log("you hit it!");
+        //     openForm();
+        //     $(".memo-context").empty();
+
+        //     const thisId = itemId;
+        //     console.log("from paste Memo", thisId);
+
+        //     // Now make an ajax call for the Article
+        //     $.ajax({
+        //       method: "GET",
+        //       url: "/anime_lists/" + thisId
+        //     })
+        //       // With that done, add the note information to the page
+        //       .then(function(data) {
+        //         console.log("comment button", data);
+        //         console.log("comment button", data.memo);
+
+        //         if (data.memo) {
+        //           $(".memo-context").empty();
+        //           const memoText = document.createElement("p");
+        //           memoText.innerText = data.memo.body;
+
+        //           $(".memo-context").append(memoText);
+        //         }
+        //       });
+        //   }
+
+        //   e.stopPropagation();
+        // });
       }
     });
   });
 
-  $(".submitBtn").on("click", function(e) {
-    console.log("submit!");
-    // const thisId = $(this).prevUntil("button", ".comment");
-    // .attr("data-id");
-    const thisId = e.target.parentElement.parentElement.parentElement.getAttribute(
-      "data-id"
-    );
-    // console.log(thisId);
-    $.ajax({
-      method: "POST",
-      url: "/anime_lists/" + thisId,
-      data: {
-        body: $("#memo-input").val()
-      }
-    }).then(function(data) {
-      // Log the response
-      console.log(data);
-    });
-    $("#memo-input").val("");
-  });
+  // $(".comment").on("click", function(event) {
+  //   // event.stopPropagation();
+  //   event.preventDefault();
+  //   console.log("the comment button is cliicked", this);
+  //   openForm();
+
+  //   const thisId = this.getAttribute("data-id");
+  //   console.log("from paste Memo", thisId);
+
+  //   // Now make an ajax call for the Article
+  //   $.ajax({
+  //     method: "GET",
+  //     url: "/anime_lists/" + thisId
+  //   })
+  //     // With that done, add the note information to the page
+  //     .then(function(data) {
+  //       console.log("comment button", data);
+  //       console.log("comment button", data.memo);
+
+  //       if (data.memo) {
+  //         $(".memo-context").empty();
+  //         const memoText = document.createElement("p");
+  //         memoText.innerText = data.memo.body;
+
+  //         $(".memo-context").append(memoText);
+  //       }
+  //     });
+  // });
+
+  // $(".submitBtn").on("click", function(e) {
+  //   console.log("submit!");
+  //   // const thisId = $(this).prevUntil("button", ".comment");
+  //   // .attr("data-id");
+  //   const thisId = e.target.parentElement.parentElement.parentElement.getAttribute(
+  //     "data-id"
+  //   );
+  //   // console.log(thisId);
+  //   $.ajax({
+  //     method: "POST",
+  //     url: "/anime_lists/" + thisId,
+  //     data: {
+  //       body: $("#memo-input").val()
+  //     }
+  //   }).then(function(data) {
+  //     // Log the response
+  //     console.log(data);
+  //   });
+  //   $("#memo-input").val("");
+  // });
 });
