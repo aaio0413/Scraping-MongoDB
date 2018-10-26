@@ -1,0 +1,23 @@
+<div class='headImage'></div>
+<ul>
+    {{#each items}}
+    {{!-- {{> listItem }} --}}
+    <li>
+        <div class='image-wrapper'>
+            <div class='image' sytle="background-image: url({{this.img}})">
+                <a href='{{this.link}}'></a>
+            </div>
+        </div>
+        <div class='title'>
+            {{this.title}}
+        </div>
+        <div class='summary'>
+            <p>{{this.summary}}</p>
+        </div>
+        <button class="comment" data-id="{{this.id}}">Add Comment</button>
+    </li>
+
+    {{/each}}
+</ul>
+
+<h1> Wait, is this rendered?</h1>

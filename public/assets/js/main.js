@@ -5,104 +5,174 @@
 //       $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
 //     }
 //   });
-  
-$(document).on("click", "#scrape", function() {
-    $.ajax({
-        method: "GET",
-        url: "/scrape"
-    }).then(function(data) {
-        console.log(data);
-        alert("The scraping was success!");
-    })
-});
+const pasteMemos = itemId => {
+  $(".memo-context").empty();
 
-$(document).on("click", "#itemList", function() {
-    $.ajax({
-        method: "GET",
-        url: "/anime_lists"
-    }).then(function(data) {
-        console.log(data);
-        console.log("ajax called but?")
+  const thisId = itemId;
+  console.log("from paste Memo", thisId);
 
-        // $("#notes").append("<h2>" + data.title + "</h2>");
-        // // An input to enter a new title
-        // $("#notes").append("<input id='titleinput' name='title' >");
-        // // A textarea to add a new note body
-        // $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
-        // // A button to submit a new note, with the id of the article saved to it
-        // $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
-  
-        // // If there's a note in the article
-        // if (data.note) {
-        //   // Place the title of the note in the title input
-        //   $("#titleinput").val(data.note.title);
-        //   // Place the body of the note in the body textarea
-        //   $("#bodyinput").val(data.note.body);
-        // }
-        location.reload();
-    })
-})
+  // Now make an ajax call for the Article
+  $.ajax({
+    method: "GET",
+    url: "/anime_lists/" + thisId
+  })
+    // With that done, add the note information to the page
+    .then(function(data) {
+      console.log("comment button", data);
+      console.log("comment button", data.memo);
 
+      if (data.memo) {
+        $(".memo-context").empty();
+        const memoText = document.createElement("p");
+        memoText.innerText = data.memo.body;
 
-  // Whenever someone clicks a p tag
-  $(document).on("click", "p", function() {
-    // Empty the notes from the note section
-    $("#notes").empty();
-    // Save the id from the p tag
-    var thisId = $(this).attr("data-id");
-  
-    // Now make an ajax call for the Article
+        $(".memo-context").append(memoText);
+      }
+    });
+};
+
+const openForm = () => {
+  document.getElementById("myForm").style.display = "block";
+};
+
+const closeForm = () => {
+  document.getElementById("myForm").style.display = "none";
+};
+
+$(document).ready(function() {
+  let itemCount = 0;
+
+  $("#scrape").on("click", function() {
     $.ajax({
       method: "GET",
-      url: "/articles/" + thisId
-    })
-      // With that done, add the note information to the page
-      .then(function(data) {
-        console.log(data);
-        // The title of the article
-        $("#notes").append("<h2>" + data.title + "</h2>");
-        // An input to enter a new title
-        $("#notes").append("<input id='titleinput' name='title' >");
-        // A textarea to add a new note body
-        $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
-        // A button to submit a new note, with the id of the article saved to it
-        $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
-  
-        // If there's a note in the article
-        if (data.note) {
-          // Place the title of the note in the title input
-          $("#titleinput").val(data.note.title);
-          // Place the body of the note in the body textarea
-          $("#bodyinput").val(data.note.body);
-        }
-      });
+      url: "/scrape"
+    }).then(function(data) {
+      console.log(data);
+      alert("The scraping was success!");
+    });
   });
 
-  $(document).on("click", "#savenote", function() {
-    // Grab the id associated with the article from the submit button
-    var thisId = $(this).attr("data-id");
-  
-    // Run a POST request to change the note, using what's entered in the inputs
+  $("#itemList").on("click", function() {
+    $.ajax({
+      method: "GET",
+      url: "/anime_lists"
+    }).then(function(data) {
+      //   // console.log("the data this ajax call get is: ", data);
+      console.log("ajax called then?", data);
+      //   // $("body").html(data);
+      //   // location.reload();
+      itemCount++;
+      const arr = data.items;
+      // let i = 0;
+      for (i = (itemCount - 1) * 20; i < itemCount * 20 + 1; i++) {
+        const item = arr[i];
+        const listItem = document.createElement("LI");
+        const itemContent = document.createElement("DIV");
+        itemContent.setAttribute("class", "image-wrapper");
+        const image = document.createElement("DIV");
+        image.setAttribute("class", "image");
+        image.setAttribute("style", "background-image: url(" + item.img + ")");
+
+        const anchor = document.createElement("A");
+        anchor.setAttribute("href", item.link);
+        image.appendChild(anchor);
+        itemContent.appendChild(image);
+
+        const summaryWrapper = document.createElement("DIV");
+        summaryWrapper.setAttribute("class", "summary-wrapper");
+
+        const title = document.createElement("DIV");
+        title.setAttribute("class", "title");
+        title.innerText = item.title;
+        // itemContent.append(title);
+
+        const summary = document.createElement("DIV");
+        summary.setAttribute("class", "summary");
+        const summaryContext = document.createElement("p");
+        summaryContext.innerText = item.newSummary;
+        summary.appendChild(summaryContext);
+        // itemContent.append(title);
+
+        const commentButton = document.createElement("Button");
+        commentButton.setAttribute("class", "comment");
+        commentButton.setAttribute("data-id", item._id);
+        commentButton.setAttribute(
+          "onclick",
+          `pasteMemos("${item._id}");openForm()`
+        );
+        commentButton.innerText = "Comment";
+        // itemContent.append(commentButton);
+
+        const commentBtnDiv = document.createElement("DIV");
+        commentBtnDiv.setAttribute("class", "form-popup");
+        commentBtnDiv.setAttribute("id", "myForm");
+
+        const commentForm = document.createElement("FORM");
+        // commentForm.setAttribute("action", "/action_page.php");
+        commentForm.setAttribute("class", "form-container");
+
+        const memo = document.createElement("H1");
+        memo.innerText = "Memo";
+
+        const memoContext = document.createElement("div");
+        memoContext.setAttribute("class", "memo-context");
+        const memoInput = document.createElement("textarea");
+        memoInput.setAttribute("id", "memo-input");
+
+        const submitBtn = document.createElement("input");
+        submitBtn.setAttribute("type", "button");
+        submitBtn.setAttribute("class", "submitBtn btn");
+        // submitBtn.setAttribute("onclick", "handleSubmit()");
+        submitBtn.setAttribute("value", "SUBMIT");
+        // submitBtn.innerText = "SUBMIT";
+
+        const closeBtn = document.createElement("BUTTON");
+        // closeBtn.setAttribute("type", "submit");
+        closeBtn.setAttribute("class", "btn cancel");
+        closeBtn.setAttribute("onclick", "closeForm()");
+        closeBtn.innerText = "CLOSE";
+
+        commentForm.appendChild(memo);
+        commentForm.appendChild(memoContext);
+        commentForm.appendChild(memoInput);
+        commentForm.appendChild(submitBtn);
+        commentForm.appendChild(closeBtn);
+        commentBtnDiv.appendChild(commentForm);
+        commentButton.append(commentBtnDiv);
+
+        // summaryContents =
+        //   title.outerHTML + summary.outerHTML + commentButton.outerHTML;
+
+        summaryWrapper.appendChild(title);
+        summaryWrapper.appendChild(summary);
+        summaryWrapper.appendChild(commentButton);
+
+        itemContent.append(summaryWrapper);
+
+        listItem.appendChild(itemContent);
+        document.getElementById("items").appendChild(listItem);
+      }
+    });
+  });
+
+  $(".submitBtn").on("click", function(e) {
+    console.log("submit!");
+    // const thisId = $(this).prevUntil("button", ".comment");
+    // .attr("data-id");
+    const thisId = e.target.parentElement.parentElement.parentElement.getAttribute(
+      "data-id"
+    );
+    // console.log(thisId);
     $.ajax({
       method: "POST",
-      url: "/articles/" + thisId,
+      url: "/anime_lists/" + thisId,
       data: {
-        // Value taken from title input
-        title: $("#titleinput").val(),
-        // Value taken from note textarea
-        body: $("#bodyinput").val()
+        body: $("#memo-input").val()
       }
-    })
-      // With that done
-      .then(function(data) {
-        // Log the response
-        console.log(data);
-        // Empty the notes section
-        $("#notes").empty();
-      });
-  
-    // Also, remove the values entered in the input and textarea for note entry
-    $("#titleinput").val("");
-    $("#bodyinput").val("");
+    }).then(function(data) {
+      // Log the response
+      console.log(data);
+    });
+    $("#memo-input").val("");
   });
-
+});

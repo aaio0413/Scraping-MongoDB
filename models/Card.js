@@ -12,7 +12,7 @@ var CardSchema = new Schema({
     required: true
   },
   // `link` is required and of type String
-  summary: {
+  newSummary: {
     type: String,
     required: true
   },
