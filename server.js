@@ -1,5 +1,4 @@
 const express = require("express");
-const hb = require("express-handlebars").create();
 const handlebars = require("express-handlebars");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
