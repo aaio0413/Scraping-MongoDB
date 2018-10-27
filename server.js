@@ -10,7 +10,7 @@ const logger = require("morgan");
 const axios = require("axios");
 
 const db = require("./models");
-const PORT = 3000;
+// const PORT = 3000;
 
 // Initialize Express
 const app = express();
@@ -214,6 +214,7 @@ app.post("/anime_lists/:id", function(req, res) {
 });
 
 // Start the server
-app.listen(PORT, function() {
-  console.log("App running on port " + PORT + "!");
-});
+// app.listen(PORT, function() {
+//   console.log();
+// });
+app.listen(process.env.PORT || port);
